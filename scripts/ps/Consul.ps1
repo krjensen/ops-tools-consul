@@ -90,6 +90,67 @@ function ConvertTo-ConsulEncodedValue
 <#
     .SYNOPSIS
 
+    Gets the domain that the consul DNS nodes listen to.
+
+
+    .DESCRIPTION
+
+    The Get-ConsulDomain function gets domain that the consul DNS nodes listen to, e.g. .consul.
+
+
+    .PARAMETER environment
+
+    The name of the environment for which the key value should be returned.
+
+
+    .PARAMETER consulLocalAddress
+
+    The URL to the local consul agent.
+
+
+    .OUTPUTS
+
+    The domain that the consul nodes listen to.
+#>
+function Get-ConsulDomain
+{
+    [CmdletBinding()]
+    param(
+        [ValidateNotNullOrEmpty()]
+        [string] $environment = 'staging',
+
+        [ValidateNotNullOrEmpty()]
+        [string] $consulLocalAddress = "http://localhost:8500"
+    )
+
+    Write-Verbose "Get-ConsulDomain - environment: $environment"
+    Write-Verbose "Get-ConsulDomain - consulLocalAddress: $consulLocalAddress"
+
+    # Stop everything if there are errors
+    $ErrorActionPreference = 'Stop'
+
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            Debug = $PSBoundParameters.ContainsKey('Debug');
+            ErrorAction = "Stop"
+        }
+
+    $nodeAddress = Get-ConsulNodeForDataCenter -environment $environment -consulLocalAddress $consulLocalAddress @commonParameterSwitches
+
+    # Always call out to the meta server because we assume that the meta server is the only one that will be publicly
+    # available
+    $keyUri = "http://$($nodeAddress)/v1/agent/self"
+
+    $keyResponse = Invoke-WebRequest -Uri $keyUri -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
+    $json = ConvertFrom-Json -InputObject $keyResponse @commonParameterSwitches
+
+    return $json.Domain
+}
+
+<#
+    .SYNOPSIS
+
     Gets the value for a given key from the key-value storage on a given data center.
 
 
@@ -317,7 +378,7 @@ function Get-ConsulNodeForDataCenter
 
     .PARAMETER environment
 
-    The name of the environment for which the key value should be returned.
+    The name of the environment for which the environment information should be returned.
 
 
     .PARAMETER consulLocalAddress
