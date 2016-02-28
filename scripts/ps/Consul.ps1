@@ -224,6 +224,89 @@ function Get-ConsulMetaServer
 <#
     .SYNOPSIS
 
+    Gets the URL of a consul node in the given environment.
+
+
+    .DESCRIPTION
+
+    The Get-ConsulNodeForDataCenter function gets the URL of a consul node in the given environment.
+
+
+    .PARAMETER environment
+
+    The name of the environment for which the node URL should be returned.
+
+
+    .PARAMETER consulLocalAddress
+
+    The URL to the local consul agent.
+
+
+    .OUTPUTS
+
+    The address, either in DNS name or IP address format, of the first node in the environment that is
+    reachable. Returns $null if no nodes respond.
+#>
+function Get-ConsulNodeForDataCenter
+{
+    [CmdletBinding()]
+    param(
+        [ValidateNotNullOrEmpty()]
+        [string] $environment = 'staging',
+
+        [ValidateNotNullOrEmpty()]
+        [string] $consulLocalAddress = "http://localhost:8500"
+    )
+
+    Write-Verbose "Get-ConsulNodeForDataCenter - environment: $environment"
+    Write-Verbose "Get-ConsulNodeForDataCenter - consulLocalAddress: $consulLocalAddress"
+
+    # Stop everything if there are errors
+    $ErrorActionPreference = 'Stop'
+
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            Debug = $PSBoundParameters.ContainsKey('Debug');
+            ErrorAction = "Stop"
+        }
+
+    $server = Get-ConsulTargetEnvironmentData -environment $environment -consulLocalAddress $consulLocalAddress @commonParameterSwitches
+    $metaServer = Get-ConsulMetaServer -consulLocalAddress $consulLocalAddress
+
+    # Always call out to the meta server because we assume that the meta server is the only one that will be publicly
+    # available
+    $nodeUri = "$($metaServer.Http)/v1/catalog/nodes?dc=$([System.Web.HttpUtility]::UrlEncode($server.DataCenter))?near=_agent"
+
+    $nodeResponse = Invoke-WebRequest -Uri $nodeUri -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
+    $json = ConvertFrom-Json -InputObject $nodeResponse @commonParameterSwitches
+
+    foreach($node in $json)
+    {
+        $node.Address
+
+        $testUri = "http://$($json.Address)/v1/agent/self"
+        try
+        {
+            $nodeResponse = Invoke-WebRequest -Uri $testUri -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
+            if ($nodeResponse.StatusCode -eq 200)
+            {
+                return $json.Address
+            }
+        }
+        catch
+        {
+            # do nothing. The node isn't publicly available so just ignore it.
+        }
+    }
+
+    # This would be odd, none of the nodes in the environment are publicly available, normally the server nodes are.
+    return $null
+}
+
+<#
+    .SYNOPSIS
+
     Gets the connection information for a given environment.
 
 
