@@ -427,6 +427,12 @@ function Get-ConsulTargetEnvironmentData
     # Go to the local consul node and get the address and the data center for the meta server
     $meta = Get-ConsulMetaServer -consulLocalAddress $consulLocalAddress @commonParameterSwitches
 
+    # Get the domain for the datacenter for our environment (e.g. all DNS names in the production environment end with .myprod)
+    $consulAgentSelfUri = "$($meta.Http)/v1/agent/self"
+    $consulAgentSelfResponse = Invoke-WebRequest -Uri $consulAgentSelfUri -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
+    $json = ConvertFrom-Json -InputObject $consulAgentSelfResponse @commonParameterSwitches
+    $consulDomain = $json.Config.Domain
+
     # Get the name of the datacenter for our environment (e.g. the production environment is in the MyCompany-MyLocation01 datacenter)
     $consulDataCenterUri = "$($meta.Http)/v1/kv/environment/$lowerCaseEnvironment/datacenter?dc=$([System.Web.HttpUtility]::UrlEncode($meta.DataCenter))"
     $consulDataCenterResponse = Invoke-WebRequest -Uri $consulDataCenterUri -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
@@ -464,6 +470,7 @@ function Get-ConsulTargetEnvironmentData
     $consulServer = ConvertFrom-ConsulEncodedValue -encodedValue $json.Value @commonParameterSwitches
 
     $result = New-Object psobject
+    Add-Member -InputObject $result -MemberType NoteProperty -Name Domain -Value $consulDomain
     Add-Member -InputObject $result -MemberType NoteProperty -Name DataCenter -Value $consulDataCenter
     Add-Member -InputObject $result -MemberType NoteProperty -Name Http -Value $consulHttp
     Add-Member -InputObject $result -MemberType NoteProperty -Name Dns -Value $consulDns
