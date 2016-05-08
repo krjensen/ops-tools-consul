@@ -16,7 +16,7 @@ The expected layout of the Consul key value store for an environment is:
                     consul
                         number_of_servers - The number of consul servers in the current environment
 
-                        <CONSUL_SERVER_NUMBER_1>
+                        <CONSUL_SERVER_NUMBER_0>
                             datacenter   - Name of datacenter
                             http         - Full URL (including port) of the HTTP connection
                             serf_wan     - Full URL (including port) of the Serf connection for consul instance on the WAN
@@ -29,7 +29,7 @@ The expected layout of the Consul key value store for an environment is:
 
                         ...
 
-                        <CONSUL_SERVER_NUMBER_N>
+                        <CONSUL_SERVER_NUMBER_N-1>
                             ...
 
                 [NOTE] The following key-value entries are only added in the meta environment
