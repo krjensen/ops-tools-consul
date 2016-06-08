@@ -47,9 +47,19 @@ The expected layout of the Consul key value store for an environment is:
             provisioning
                 <RESOURCE_0>
                     service
+                        <SERVICE_0>
+
+                        ...
+
+                        <SERVICE_N-1>
 
                 <RESOURCE_N-1>
 
-            services
-                external
-                    <EXTERNAL_SERVICE_0>
+            resource
+                <RESOURCE_0>
+                    service
+                        <SERVICE_0>
+                            config
+
+            external
+                <EXTERNAL_SERVICE_0>
