@@ -1050,8 +1050,14 @@ function Set-ConsulKeyValue
     }
 
     $uri = "$($url)/v1/kv/$($keyPath)?dc=$([System.Web.HttpUtility]::UrlEncode($dc))"
+
+    Write-Verbose "Setting key-value pair at $(uri)"
     $response = Invoke-WebRequest -Uri $uri -Method Put -Body $value -UseBasicParsing -UseDefaultCredentials @commonParameterSwitches
-    if ($response.StatusCode -ne 200)
+    if ($response.StatusCode -eq 200)
+    {
+        Write-Verbose "Key-value pair successfully set at $uri"
+    }
+    else
     {
         throw "Failed to set Key-Value pair [$keyPath] - [$value] on [$dc]"
     }
