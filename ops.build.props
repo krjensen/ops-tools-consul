@@ -747,6 +747,7 @@
             </PostSteps>
         </BuildStepsToExecute>
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareFileHashes)">
             <Properties>
             </Properties>
@@ -759,6 +760,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        -->
         <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
             <Properties>

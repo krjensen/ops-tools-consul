@@ -353,6 +353,7 @@
             </PostSteps>
         </DeployStepsToExecute>
 
+        <!--
         <DeployStepsToExecute Include="$(DeployStepsPrepareFileHashes)">
             <Properties>
             </Properties>
@@ -365,6 +366,7 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
+        -->
 
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToTags)">
