@@ -3,19 +3,22 @@
     <metadata>
         <id>Ops.Tools.Consul.Powershell</id>
         <version>$VersionSemantic$</version>
-        <authors>P. van der Velde</authors>
-        <owners>P. van der Velde</owners>
+        <authors>$CompanyName$</authors>
+        <owners>$CompanyName$</owners>
         <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
         <projectUrl>$CompanyUrl$</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>
-            $ProductDescription$
+            The collection of scripts and tools that can be used to interact with one or more Consul instances as created by the ops-resource-core scripts and cookbooks.
         </description>
+        <releaseNotes>
+            $ReleaseNotesHtmlEncoded$
+        </releaseNotes>
         <dependencies>
             $Dependencies$
         </dependencies>
     </metadata>
     <files>
-        <file src="$DirScripts$\ps\Consul.ps1" target="scripts" />
+        <file src="$DirSrc$\ps\Consul.ps1" target="scripts" />
     </files>
 </package>

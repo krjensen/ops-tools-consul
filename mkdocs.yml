@@ -1,8 +1,0 @@
-site_name: OpsToolsConsul
-theme: readthedocs
-repo_url: https://github.com/pvandervelde/ops-tools-consul
-
-pages:
-- Home: index.md
-- Usage: usage.md
-- Examples: examples.md
